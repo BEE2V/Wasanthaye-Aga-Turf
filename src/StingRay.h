@@ -6,7 +6,7 @@
 #define STINGRAY_H
 
 class StingRay {
-public:
+}
 
 
 #endif // STINGRAY_H

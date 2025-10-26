@@ -6,7 +6,8 @@
 #define STINGRAY_H
 
 class StingRay {
-}
+    
+};
 
 
 #endif // STINGRAY_H

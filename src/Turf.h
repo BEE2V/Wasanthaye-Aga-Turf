@@ -43,16 +43,16 @@ private:
 
     void runRainbow();
 
-    void setupAlwaysOn() const;
+    void setupAlwaysOn();
 
-    void runAlwaysOn() const;
+    void runAlwaysOn();
 };
 
 struct Pattern {
-    void (Turf::*setup)();
-    void (Turf::*loop)();
+    void (Turf::*start)();
+    void (Turf::*run)();
 
     Pattern(void (Turf::*s)(), void (Turf::*l)())
-        : setup(s), loop(l) {}
+        : start(s), run(l) {}
 };
 

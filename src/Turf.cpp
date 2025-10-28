@@ -59,7 +59,7 @@ void Turf::onTick() {
 
 void Turf::loop() {
     this->checkPattern();
-    this->patterns[currentPatternIndex].loop();
+    this->patterns[currentPatternIndex].run();
 }
 
 void Turf::initializeStingray() {
@@ -250,7 +250,7 @@ void Turf::checkPattern() {
 void Turf::changePattern(const int newPatternIndex) {
     currentPatternIndex = newPatternIndex;
     patternStartTime = millis();
-    patterns[currentPatternIndex].setup();
+    patterns[currentPatternIndex].start();
 }
 
 void Turf::setupOcean() {
@@ -265,7 +265,7 @@ void Turf::setupRainbow() {
 void Turf::runRainbow() {
 }
 
-void Turf::setupAlwaysOn() const {
+void Turf::setupAlwaysOn() {
     // Turn on all body relays
     if (RGBLine* body = stingRay.getBodyRGBLine("body")) {
         // We don't have a getter for relay count; use known BODY_RELAY_COUNT
@@ -305,7 +305,7 @@ void Turf::setupAlwaysOn() const {
     bottomWave.runPattern(bottomStates, bottomCount);
 }
 
-void Turf::runAlwaysOn() const {
+void Turf::runAlwaysOn() {
     // Keep body relays asserted
     stingRay.getBodyRGBLine("body")->apply();
 

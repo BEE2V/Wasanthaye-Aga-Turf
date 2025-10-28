@@ -3,9 +3,7 @@
 
 class VirtualSegment : public Segment {
 public:
-    explicit VirtualSegment(const uint16_t count = 0, const uint16_t start = 0)
+    explicit VirtualSegment(uint16_t count = 0, uint16_t start = 0)
         : Segment(count, start) {}
-
-    static void runPattern(ColorSet* colors, uint16_t start = 0, uint16_t count = 0);
-    static void clear();
+    // No additional behavior; treated as spacing. Segment methods will no-op without an attached strip.
 };

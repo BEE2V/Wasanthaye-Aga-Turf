@@ -26,4 +26,10 @@ public:
     void runPattern(const ColorSet* colors, uint16_t startIndex = 0, uint16_t count = 0) const;
     void runPattern(uint8_t colors[][3], uint16_t colorCount, uint16_t patternStartIndex = 0, uint16_t count = 0) const;
     void clear() ;
+
+    // Helpers for progressive animations
+    uint16_t getPhysicalLength() const; // counts only segments with real LEDs
+    void runGradientProgress(const uint8_t startRGB[3], const uint8_t endRGB[3], uint16_t litCount) const;
+    void clearNoShow() const;
+    void show() const;
 };

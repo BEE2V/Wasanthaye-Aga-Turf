@@ -2,28 +2,37 @@
 #include "NeonLine.h"
 #include "StingRay.h"
 
-struct Pattern;
+class Turf;
+
+struct Pattern {
+    void (Turf::*start)();
+    void (Turf::*run)();
+
+    Pattern() : start(nullptr), run(nullptr) {}
+    Pattern(void (Turf::*s)(), void (Turf::*l)())
+        : start(s), run(l) {}
+};
 
 class Turf {
 
 public:
     Turf();
-
+    void begin();           // <-- new: call after Serial.begin()
     void onTick();
-    void loop();
+    void loop2();
 
 private:
-    Pattern patterns[];
+    Pattern patterns[3];
     int currentPatternIndex;
-    int patternStartTime;
+    unsigned long patternStartTime;
 
     StingRay stingRay;
-    NeonLine topWave;
-    NeonLine bottomWave;
+    NeonLine* topWave;
+    NeonLine* bottomWave;
 
     int tickState;
     int tickMax;
-    float lastTickTime;
+    unsigned long lastTickTime;
     int delayTime;
 
     void initializeStingray();
@@ -46,13 +55,13 @@ private:
     void setupAlwaysOn();
 
     void runAlwaysOn();
+
+    // --- Ocean animation config ---
+    uint16_t oceanFrameCount; // how many frames in the first half
+    // Order from bottom to top for left wing
+    // rhombus, circular, long, short, triangle, top
+    struct Gradient { uint8_t start[3]; uint8_t end[3]; };
+    Gradient leftWingGradients[6];
+    uint16_t leftWingLengths[6];
+    void computeLeftWingMeta();
 };
-
-struct Pattern {
-    void (Turf::*start)();
-    void (Turf::*run)();
-
-    Pattern(void (Turf::*s)(), void (Turf::*l)())
-        : start(s), run(l) {}
-};
-

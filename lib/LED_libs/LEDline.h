@@ -38,6 +38,9 @@ public:
   // Query helper
   int getSegmentLength(int segment);
 
+  // Return how many segments currently exist (new)
+  int getSegmentCount();
+
   void clear();
 };
 

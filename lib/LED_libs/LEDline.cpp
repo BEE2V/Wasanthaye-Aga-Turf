@@ -334,6 +334,11 @@ int LEDline::getSegmentLength(int segment) {
   return (len > 0) ? len : -1;
 }
 
+// Return current number of segments
+int LEDline::getSegmentCount() {
+  return segmentCount;
+}
+
 // Set a single pixel inside a segment by index (0-based) and optionally show immediately.
 void LEDline::setSegmentPixel(int segment, int indexInSegment, uint32_t color, bool showNow) {
   if (segment < 0 || segment >= segmentCount) return;

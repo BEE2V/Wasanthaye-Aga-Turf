@@ -4,27 +4,28 @@
 #define BODY_RED_PIN 5
 #define BODY_GREEN_PIN 6
 #define BODY_BLUE_PIN 7
-const int BODY_RELAY_PINS[] = {22, 23, 24, 25, 26, 27, 28, 29, 30};
+constexpr int BODY_RELAY_PINS[] = {A12, A15, A13, A14, A11, A10, A8, A9, A7};
 constexpr int BODY_RELAY_COUNT = sizeof(BODY_RELAY_PINS) / sizeof(BODY_RELAY_PINS[0]);
 
-#define LEFT_WING_TOP_PIN 11
-#define LEFT_WING_TRIANGLE_PIN 13
-#define LEFT_WING_SHORT_PIN 9
-#define LEFT_WING_LONG_PIN 7
-#define LEFT_WING_CIRCULAR_PIN 5
-#define LEFT_WING_RHOMBUS_PIN 3
+#define LEFT_WING_TOP_PIN 24
+#define LEFT_WING_TRIANGLE_PIN 21
+#define LEFT_WING_SHORT_PIN 16
+#define LEFT_WING_LONG_PIN 17
+#define LEFT_WING_CIRCULAR_PIN 14
+#define LEFT_WING_RHOMBUS_PIN 15
 
-#define RIGHT_WING_TOP_PIN 37
-#define RIGHT_WING_TRIANGLE_PIN 38
-#define RIGHT_WING_SHORT_PIN 39
-#define RIGHT_WING_LONG_PIN 40
-#define RIGHT_WING_CIRCULAR_PIN 41
-#define RIGHT_WING_RHOMBUS_PIN 42
+#define RIGHT_WING_TOP_PIN 23
+#define RIGHT_WING_TRIANGLE_PIN 22
+#define RIGHT_WING_SHORT_PIN 18
+#define RIGHT_WING_LONG_PIN 19
+#define RIGHT_WING_CIRCULAR_PIN 20
+#define RIGHT_WING_RHOMBUS_PIN 25
 
-#define TAIL_PIN 43
+#define HEAD_PIN 27
+#define TAIL_PIN 26
 
-constexpr uint8_t TOP_WAVE_PINS[] = {A0, A1, A2};
-constexpr uint8_t BOTTOM_WAVE_PINS[] = {A3, A4, A5};
+constexpr uint8_t TOP_WAVE_PINS[] = {A3, A4, A5};
+constexpr uint8_t BOTTOM_WAVE_PINS[] = {A0, A1, A2};
 
 
 // ------------------------- Turf -------------------------
@@ -34,7 +35,7 @@ Turf::Turf() :
         Pattern(&Turf::setupOcean, &Turf::runOcean),
         Pattern(&Turf::setupRainbow, &Turf::runRainbow)
     },
-    currentPatternIndex(0),
+    currentPatternIndex(-1),
     patternStartTime(0),
     tickState(0),
     tickMax(120),
@@ -81,6 +82,17 @@ void Turf::loop2() {
 void Turf::initializeStingray() {
     Serial.println("Turf: initializeStingray");
 
+    // Head
+    constexpr SegmentSet headSegSet[] = {
+        {0, 24}
+    };
+    stingRay.setupHead(new LEDLine(
+        HEAD_PIN,
+        24,
+        headSegSet,
+        1
+    ));
+
     // Body
     stingRay.addBodyRGBLine("body", new RGBLine(
         BODY_RED_PIN, BODY_GREEN_PIN, BODY_BLUE_PIN,
@@ -94,7 +106,7 @@ void Turf::initializeStingray() {
     };
     stingRay.addLeftWingLEDLine("top", new LEDLine(
         LEFT_WING_TOP_PIN,
-        29 + 29 + 44 + 23,
+        28 + 29 + 44 + 23,
         leftTopSegSet,
         sizeof(leftTopSegSet) / sizeof(leftTopSegSet[0])
     ));
@@ -102,16 +114,16 @@ void Turf::initializeStingray() {
     constexpr SegmentSet leftTriangleSegSet[] = {
         {0, 7}, {1, 5},
         {0, 6}, {1, 5},
-        {0, 6}, {1, 5},
+        {0, 7}, {1, 5},
         {0, 5}, {1, 5},
-        {0, 5}, {1, 5},
+        {0, 4}, {1, 5},
         {0, 5}, {1, 5},
         {0, 5}, {1, 5},
         {0, 20},
     };
     stingRay.addLeftWingLEDLine("triangle", new LEDLine(
         LEFT_WING_TRIANGLE_PIN,
-        7 + 6 + 6 + 5 + 5 + 5 + 5 + 20,
+        7 + 6 + 7 + 5 + 4 + 5 + 5 + 20,
         leftTriangleSegSet,
         sizeof(leftTriangleSegSet) / sizeof(leftTriangleSegSet[0])
     ));
@@ -127,21 +139,21 @@ void Turf::initializeStingray() {
     ));
     // - Long
     constexpr SegmentSet leftLongSegSet[] = {
-        {0, 31}, {1, 5}, {0, 30}, {1, 5}, {0, 27}
+        {0, 30}, {1, 5}, {0, 30}, {1, 5}, {0, 27}
     };
     stingRay.addLeftWingLEDLine("long", new LEDLine(
         LEFT_WING_LONG_PIN,
-        31 + 30 + 27,
+        30 + 30 + 27,
         leftLongSegSet,
         sizeof(leftLongSegSet) / sizeof(leftLongSegSet[0])
     ));
     // - Circular
     constexpr SegmentSet leftCircularSegSet[] = {
-        {0, 55}, {1, 5}, {0, 68}
+        {0, 56}, {1, 5}, {0, 68}
     };
     stingRay.addLeftWingLEDLine("circular", new LEDLine(
         LEFT_WING_CIRCULAR_PIN,
-        55 + 68,
+        56 + 68,
         leftCircularSegSet,
         sizeof(leftCircularSegSet) / sizeof(leftCircularSegSet[0])
     ));
@@ -163,11 +175,11 @@ void Turf::initializeStingray() {
     // Right Wing
     // - Top
     constexpr SegmentSet rightTopSegSet[] = {
-        {0, 30}, {0, 32}, {0, 41}, {0, 24},
+        {0, 30}, {0, 31}, {0, 41}, {0, 24},
     };
     stingRay.addRightWingLEDLine("top", new LEDLine(
         RIGHT_WING_TOP_PIN,
-        30 + 32 + 41 + 24,
+        30 + 31 + 41 + 24,
         rightTopSegSet,
         sizeof(rightTopSegSet) / sizeof(rightTopSegSet[0])
     ));
@@ -235,11 +247,11 @@ void Turf::initializeStingray() {
 
     // Tail
     constexpr SegmentSet tailSegSet[] = {
-        {0, 120}
+        {0, 122}
     };
     stingRay.setupTail(new LEDLine(
         TAIL_PIN,
-        120,
+        122,
         tailSegSet,
         1
     ));
@@ -293,6 +305,8 @@ void Turf::setupOcean() {
         for (int i = 0; i < BODY_RELAY_COUNT; i++)
             body->updateRelay(i, false);
         body->apply();
+        // Set an oceanic base color on the body motor driver (RGB pins)
+        body->setRGBColor(0, 160, 255);
     }
 
     // Keep LEDs on wings & tail solid white
@@ -313,12 +327,13 @@ void Turf::setupOcean() {
     if (auto r = stingRay.getRightWingLEDLine("rhombus"))   r->runPattern(color, 1);
 
     if (auto tailLed = static_cast<LEDLine*>(stingRay.tail)) tailLed->runPattern(color, 1);
+    if (auto headLed = static_cast<LEDLine*>(stingRay.head)) headLed->runPattern(color, 1);
 
-    // Neon waves
+    // Neon waves: initialize with first pin ON to start the chase
     bool topStates[sizeof(TOP_WAVE_PINS)/sizeof(TOP_WAVE_PINS[0])];
     bool bottomStates[sizeof(BOTTOM_WAVE_PINS)/sizeof(BOTTOM_WAVE_PINS[0])];
-    for (size_t i = 0; i < (sizeof(topStates)/sizeof(topStates[0])); i++) topStates[i] = false;
-    for (size_t i = 0; i < (sizeof(bottomStates)/sizeof(bottomStates[0])); i++) bottomStates[i] = false;
+    for (size_t i = 0; i < (sizeof(topStates)/sizeof(topStates[0])); i++) topStates[i] = (i == 0);
+    for (size_t i = 0; i < (sizeof(bottomStates)/sizeof(bottomStates[0])); i++) bottomStates[i] = (i == 0);
     if (topWave) topWave->runPattern(topStates, (int)(sizeof(topStates)/sizeof(topStates[0])));
     if (bottomWave) bottomWave->runPattern(bottomStates, (int)(sizeof(bottomStates)/sizeof(bottomStates[0])));
 
@@ -345,119 +360,239 @@ void Turf::setupOcean() {
 }
 
 void Turf::runOcean() {
-    // First half of tick cycle: progressive on; second half: reverse off
+    // First half of tick cycle: tail first, then body+wings together.
+    // Second half: body+wings reverse first, then tail reverse.
     const unsigned long now = millis();
     const unsigned long elapsed = now - patternStartTime;
 
-    // Map elapsed to two halves using tickMax as reference duration unit
-    // Use delayTime as approximate ms per tick from onTick smoothing
+    // Drive waves concurrently with the stingray animation (simple chases)
+    {
+        // Top wave: forward chase, ~150ms per step
+        const int topCount = (int)(sizeof(TOP_WAVE_PINS)/sizeof(TOP_WAVE_PINS[0]));
+        bool topStates[topCount];
+        if (topCount > 0) {
+            int topIndex = (int)((elapsed / 150UL) % (unsigned long)topCount);
+            for (int i = 0; i < topCount; ++i) topStates[i] = (i == topIndex);
+            if (topWave) topWave->runPattern(topStates, topCount);
+        }
+
+        // Bottom wave: reverse chase, ~200ms per step
+        const int bottomCount = (int)(sizeof(BOTTOM_WAVE_PINS)/sizeof(BOTTOM_WAVE_PINS[0]));
+        bool bottomStates[bottomCount];
+        if (bottomCount > 0) {
+            int bottomIndex = (int)((elapsed / 200UL) % (unsigned long)bottomCount);
+            // reverse direction
+            bottomIndex = (bottomCount - 1 - bottomIndex);
+            for (int i = 0; i < bottomCount; ++i) bottomStates[i] = (i == bottomIndex);
+            if (bottomWave) bottomWave->runPattern(bottomStates, bottomCount);
+        }
+    }
+
     const unsigned long cycleMs = (unsigned long)tickMax * (unsigned long)(delayTime > 0 ? delayTime : 1);
     if (cycleMs == 0) return;
     const unsigned long halfMs = cycleMs / 2;
     const unsigned long inCycle = elapsed % cycleMs;
     const bool firstHalf = inCycle < halfMs;
-
-    // Ensure metadata exists
-    if (leftWingLengths[0] == 0 && leftWingLengths[1] == 0) {
-        computeLeftWingMeta();
-    }
-
-    // Fetch left wing lines (bottom to top order)
-    LEDLine* rh = stingRay.getLeftWingLEDLine("rhombus");
-    LEDLine* ci = stingRay.getLeftWingLEDLine("circular");
-    LEDLine* lo = stingRay.getLeftWingLEDLine("long");
-    LEDLine* sh = stingRay.getLeftWingLEDLine("short");
-    LEDLine* tr = stingRay.getLeftWingLEDLine("triangle");
-    LEDLine* tp = stingRay.getLeftWingLEDLine("top");
-
-    LEDLine* lines[6] = {rh, ci, lo, sh, tr, tp};
-
-    if (oceanFrameCount == 0) {
-        // Default to sum lengths
-        computeLeftWingMeta();
-        uint32_t total = 0; for (int i = 0; i < 6; i++) total += leftWingLengths[i];
-        oceanFrameCount = (uint16_t)(total > 65535 ? 65535 : total);
-        if (oceanFrameCount == 0) return;
-    }
-
-    // Calculate frame index within the current half
     const unsigned long posInHalf = firstHalf ? inCycle : (inCycle - halfMs);
-    // Use floor mapping (no rounding) to avoid jitter at frame boundaries
-    unsigned long numer = posInHalf * (unsigned long)oceanFrameCount;
-    uint16_t frameIndex = (uint16_t)(numer / (halfMs ? halfMs : 1));
-    if (frameIndex >= oceanFrameCount) frameIndex = oceanFrameCount - 1;
 
+    // Gather wing lines bottom->top
+    LEDLine* lrh = stingRay.getLeftWingLEDLine("rhombus");
+    LEDLine* lci = stingRay.getLeftWingLEDLine("circular");
+    LEDLine* llo = stingRay.getLeftWingLEDLine("long");
+    LEDLine* lsh = stingRay.getLeftWingLEDLine("short");
+    LEDLine* ltr = stingRay.getLeftWingLEDLine("triangle");
+    LEDLine* ltp = stingRay.getLeftWingLEDLine("top");
+    LEDLine* linesL[6] = {lrh, lci, llo, lsh, ltr, ltp};
+
+    LEDLine* rrh = stingRay.getRightWingLEDLine("rhombus");
+    LEDLine* rci = stingRay.getRightWingLEDLine("circular");
+    LEDLine* rlo = stingRay.getRightWingLEDLine("long");
+    LEDLine* rsh = stingRay.getRightWingLEDLine("short");
+    LEDLine* rtr = stingRay.getRightWingLEDLine("triangle");
+    LEDLine* rtp = stingRay.getRightWingLEDLine("top");
+    LEDLine* linesR[6] = {rrh, rci, rlo, rsh, rtr, rtp};
+
+    // Tail and body
+    LEDLine* tailLed = static_cast<LEDLine*>(stingRay.tail);
+    LEDLine* headLed = static_cast<LEDLine*>(stingRay.head);
+    RGBLine* body = stingRay.getBodyRGBLine("body");
+    // Maintain oceanic color during animation (does not affect relays)
+    if (body) {
+        body->setRGBColor(0, 200, 255);
+    }
+
+    // Ensure left wing meta
+    if (leftWingLengths[0] == 0 && leftWingLengths[1] == 0) computeLeftWingMeta();
+
+    // compute physical counts for wings
+    uint16_t leftTotals[6];
+    uint16_t rightTotals[6];
+    uint32_t leftSum = 0, rightSum = 0;
+    for (int i = 0; i < 6; ++i) {
+        leftTotals[i] = linesL[i] ? linesL[i]->getPhysicalLength() : 0;
+        rightTotals[i] = linesR[i] ? linesR[i]->getPhysicalLength() : 0;
+        leftSum += leftTotals[i];
+        rightSum += rightTotals[i];
+    }
+
+    const uint16_t tailLen = tailLed ? tailLed->getPhysicalLength() : 0;
+    const uint16_t headLen = headLed ? headLed->getPhysicalLength() : 0;
+    const uint16_t bodyLen = BODY_RELAY_COUNT;
+
+    // body+wing timeline length: choose max so body and wings finish together
+    uint32_t wingsMax = leftSum > rightSum ? leftSum : rightSum;
+    uint32_t bodyWingFrames = wingsMax > bodyLen ? wingsMax : bodyLen;
+    if (bodyWingFrames == 0 && tailLen == 0) return;
+
+    // total frames per half
+    const uint32_t totalFrames = (uint32_t)tailLen + bodyWingFrames;
+    if (totalFrames == 0) return;
+
+    // map posInHalf -> frame index [0 .. totalFrames-1]
+    uint32_t frame = (uint32_t)((posInHalf * totalFrames) / (halfMs ? halfMs : 1));
+    if (frame >= totalFrames) frame = totalFrames - 1;
+
+    // Helper lambda to compute a toDraw count (0..lineCount) given progressFrame in [0..bodyWingFrames-1]
+    auto mapProgress = [](uint32_t progressFrame, uint32_t totalProgressFrames, uint32_t lineCount) -> uint16_t {
+        if (lineCount == 0) return 0;
+        if (progressFrame >= totalProgressFrames) return (uint16_t)lineCount;
+        // add +1 to make first visible step light at least one unit once progress > 0
+        uint32_t numer = (uint32_t)(progressFrame + 1) * (uint32_t)lineCount;
+        uint16_t val = (uint16_t)(numer / totalProgressFrames);
+        if (val == 0 && progressFrame > 0) val = 1;
+        if (val > lineCount) val = (uint16_t)lineCount;
+        return val;
+    };
+
+    // FIRST HALF
     if (firstHalf) {
-        // FIRST HALF: Staggered progressive lighting (bottom to top)
-        // Each line starts 1 tick after the previous one
-        const unsigned long tickMs = delayTime > 0 ? delayTime : 1;
-        
-        for (int i = 0; i < 6; i++) {
-            LEDLine* L = lines[i];
-            if (!L) continue;
-            
-            // Calculate when this line should start (i ticks after rhombus)
-            const unsigned long lineStartMs = i * tickMs;
-            
-            if (posInHalf < lineStartMs) {
-                // This line hasn't started yet - keep it off
-                L->clear();
-                continue;
+        // If we're still in the tail-only phase:
+        if (frame < tailLen) {
+            // tail progressively lights from its start -> end (tail -> body)
+            const uint16_t toDrawTail = (uint16_t)(frame + 1); // 1..tailLen
+            if (tailLed) {
+                // Use tail gradient (reuse top gradient for color)
+                const uint8_t tailStart[3] = {0, 0, 48};
+                const uint8_t tailEnd[3]   = {0, 255, 255};
+                tailLed->runGradientProgress(tailStart, tailEnd, toDrawTail);
             }
-            
-            // This line is active - calculate its progress
-            const unsigned long lineElapsed = posInHalf - lineStartMs;
-            const unsigned long lineDuration = halfMs > lineStartMs ? (halfMs - lineStartMs) : 1;
-            
-            if (lineDuration == 0) {
-                L->clear();
-                continue;
+            // head progressively lights from its start -> end
+            if (headLed && headLen > 0) {
+                const uint16_t toDrawHead = (uint16_t)(frame + 1); // 1..headLen (capped inside)
+                const uint8_t headStart[3] = {0, 0, 48};
+                const uint8_t headEnd[3]   = {0, 255, 255};
+                headLed->runGradientProgress(headStart, headEnd, toDrawHead);
             }
-            
-            // Map line progress to frame count for this specific line
-            const uint16_t lineFrameCount = leftWingLengths[i] ? leftWingLengths[i] : L->getPhysicalLength();
-            const uint16_t lineFrame = (uint16_t)((lineElapsed * lineFrameCount) / lineDuration);
-            const uint16_t toDraw = (lineFrame >= lineFrameCount) ? lineFrameCount : lineFrame;
-            
-            L->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, toDraw);
+            // body and wings remain off
+            if (body) {
+                for (int i = 0; i < BODY_RELAY_COUNT; ++i) body->updateRelay(i, false);
+                body->apply();
+            }
+            for (int i = 0; i < 6; ++i) {
+                if (linesL[i]) linesL[i]->clear();
+                if (linesR[i]) linesR[i]->clear();
+            }
+            return;
         }
+
+        // Tail finished; now body+wings animate simultaneously
+        const uint32_t bodyProgressFrame = frame - tailLen; // 0 .. bodyWingFrames-1
+        // Body: bottom -> top
+        if (body) {
+            const uint16_t toDrawBody = mapProgress(bodyProgressFrame, bodyWingFrames, bodyLen);
+            for (uint16_t r = 0; r < BODY_RELAY_COUNT; ++r) {
+                const bool on = (r < toDrawBody);
+                body->updateRelay(r, on);
+            }
+            body->apply();
+        }
+
+        // Wings: for each line compute its toDraw and apply runGradientProgress (start->end)
+        for (int i = 0; i < 6; ++i) {
+            if (linesL[i]) {
+                const uint16_t toDrawL = mapProgress(bodyProgressFrame, bodyWingFrames, leftTotals[i]);
+                linesL[i]->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, toDrawL);
+            }
+            if (linesR[i]) {
+                const uint16_t toDrawR = mapProgress(bodyProgressFrame, bodyWingFrames, rightTotals[i]);
+                linesR[i]->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, toDrawR);
+            }
+        }
+
     } else {
-        // SECOND HALF: Reverse progressive turning off (top to bottom)
-        // Each line starts turning off 1 tick after the previous one
-        const unsigned long tickMs = delayTime > 0 ? delayTime : 1;
-        
-        for (int i = 5; i >= 0; i--) { // Reverse order: top to bottom
-            LEDLine* L = lines[i];
-            if (!L) continue;
-            
-            // Calculate when this line should start turning off (i ticks after top)
-            const unsigned long lineStartMs = (5 - i) * tickMs;
-            
-            if (posInHalf < lineStartMs) {
-                // This line hasn't started turning off yet - keep it fully on
-                const uint16_t segLen = leftWingLengths[i] ? leftWingLengths[i] : L->getPhysicalLength();
-                L->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, segLen);
-                continue;
+        // SECOND HALF: reverse order
+        // frame still mapped 0..totalFrames-1 where 0 means start of second half
+        // First: reverse body+wings (top->bottom and wing end->start) while frame < bodyWingFrames
+        if (frame < bodyWingFrames) {
+            const uint32_t revProgress = frame; // 0..bodyWingFrames-1
+            // Body: top -> bottom turn off (compute remaining)
+            if (body) {
+                // compute number of relays remaining lit
+                uint16_t turnedOff = (uint16_t)((revProgress * bodyLen) / bodyWingFrames);
+                if (turnedOff > bodyLen) turnedOff = bodyLen;
+                uint16_t remaining = (turnedOff >= bodyLen) ? 0 : (bodyLen - turnedOff);
+                // We need to light remaining from bottom->top, i.e., keep first 'remaining' relays ON
+                for (uint16_t r = 0; r < BODY_RELAY_COUNT; r++) {
+                    const bool on = (r < remaining);
+                    body->updateRelay(r, on);
+                }
+                body->apply();
             }
-            
-            // This line is turning off - calculate its progress
-            const unsigned long lineElapsed = posInHalf - lineStartMs;
-            const unsigned long lineDuration = halfMs > lineStartMs ? (halfMs - lineStartMs) : 1;
-            
-            if (lineDuration == 0) {
-                L->clear();
-                continue;
+
+            // Wings: for each line compute remaining = lineCount - turnedOff_for_line
+            for (int i = 0; i < 6; ++i) {
+                if (linesL[i]) {
+                    uint16_t lineCount = leftTotals[i];
+                    uint16_t turnedOffL = (uint16_t)((revProgress * lineCount) / bodyWingFrames);
+                    if (turnedOffL > lineCount) turnedOffL = lineCount;
+                    uint16_t remainingL = (turnedOffL >= lineCount) ? 0 : (lineCount - turnedOffL);
+                    // draw 'remainingL' from start (which results in end->start being turned off progressively)
+                    linesL[i]->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, remainingL);
+                }
+                if (linesR[i]) {
+                    uint16_t lineCount = rightTotals[i];
+                    uint16_t turnedOffR = (uint16_t)((revProgress * lineCount) / bodyWingFrames);
+                    if (turnedOffR > lineCount) turnedOffR = lineCount;
+                    uint16_t remainingR = (turnedOffR >= lineCount) ? 0 : (lineCount - turnedOffR);
+                    linesR[i]->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, remainingR);
+                }
             }
-            
-            // Map line progress to remaining LEDs (reverse of lighting up)
-            const uint16_t lineFrameCount = leftWingLengths[i] ? leftWingLengths[i] : L->getPhysicalLength();
-            const uint16_t lineFrame = (uint16_t)((lineElapsed * lineFrameCount) / lineDuration);
-            const uint16_t remaining = (lineFrame >= lineFrameCount) ? 0 : (lineFrameCount - lineFrame);
-            
-            if (remaining == 0) {
-                L->clear();
-            } else {
-                L->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, remaining);
+
+            return;
+        }
+
+        // After body+wings reversed, handle tail reverse.
+        const uint32_t tailFrame = frame - bodyWingFrames; // 0..tailLen-1
+        if (tailLed) {
+            // For tail reverse we want to turn off from body -> tail.
+            // We compute remaining units on tail (remaining = tailLen - (tailFrame+1))
+            uint16_t turnedOffTail = (uint16_t)(((tailFrame) * tailLen) / (tailLen ? tailLen : 1));
+            if (turnedOffTail > tailLen) turnedOffTail = tailLen;
+            uint16_t remainingTail = (turnedOffTail >= tailLen) ? 0 : (tailLen - turnedOffTail);
+            // draw remainingTail starting from the tail side (implementation assumes tailLed start==tail side)
+            const uint8_t tailStart[3] = {0, 0, 48};
+            const uint8_t tailEnd[3]   = {0, 255, 255};
+            tailLed->runGradientProgress(tailStart, tailEnd, remainingTail);
+        }
+        if (headLed) {
+            // Reverse head similarly: turn off from body -> head tip
+            uint16_t turnedOffHead = (uint16_t)(((tailFrame) * headLen) / (headLen ? headLen : 1));
+            if (turnedOffHead > headLen) turnedOffHead = headLen;
+            uint16_t remainingHead = (turnedOffHead >= headLen) ? 0 : (headLen - turnedOffHead);
+            const uint8_t headStart[3] = {0, 0, 48};
+            const uint8_t headEnd[3]   = {0, 255, 255};
+            headLed->runGradientProgress(headStart, headEnd, remainingHead);
+        }
+
+        // keep body and wings fully off when tail is finishing reverse
+        if (frame >= bodyWingFrames) {
+            if (body) {
+                for (int i = 0; i < BODY_RELAY_COUNT; ++i) body->updateRelay(i, false);
+                body->apply();
+            }
+            for (int i = 0; i < 6; ++i) {
+                if (linesL[i]) linesL[i]->clear();
+                if (linesR[i]) linesR[i]->clear();
             }
         }
     }
@@ -479,10 +614,12 @@ void Turf::setupAlwaysOn() {
         for (int i = 0; i < BODY_RELAY_COUNT; i++)
             body->updateRelay(i, true);
         body->apply();
+        // Always-on: set white color on RGB pins
+        body->setRGBColor(255, 255, 255);
     }
 
     // Keep LEDs on wings & tail solid white
-    uint8_t color[1][3] = {{255, 255, 255}};
+    uint8_t color[1][3] = {{0, 0, 255}};
 
     if (auto l = stingRay.getLeftWingLEDLine("top"))       l->runPattern(color, 1);
     if (auto l = stingRay.getLeftWingLEDLine("triangle"))  l->runPattern(color, 1);
@@ -499,6 +636,7 @@ void Turf::setupAlwaysOn() {
     if (auto r = stingRay.getRightWingLEDLine("rhombus"))   r->runPattern(color, 1);
 
     if (auto tailLed = static_cast<LEDLine*>(stingRay.tail)) tailLed->runPattern(color, 1);
+    if (auto headLed = static_cast<LEDLine*>(stingRay.head)) headLed->runPattern(color, 1);
 
     // Neon waves
     bool topStates[sizeof(TOP_WAVE_PINS)/sizeof(TOP_WAVE_PINS[0])];

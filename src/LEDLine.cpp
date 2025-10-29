@@ -178,3 +178,78 @@ void LEDLine::runGradientProgress(const uint8_t startRGB[3], const uint8_t endRG
     // Single show after all segments updated
     const_cast<Adafruit_NeoPixel&>(strip).show();
 }
+
+// --- New methods implemented below ---
+
+uint8_t LEDLine::getSegmentCount() const {
+    return segmentCount;
+}
+
+int LEDLine::getSegmentLength(int index) const {
+    if (index < 0 || index >= segmentCount) return 0;
+    const Segment* seg = segments[index];
+    return seg ? (int)seg->getCount() : 0;
+}
+
+void LEDLine::clearSegment(int index) const {
+    if (index < 0 || index >= segmentCount) return;
+    Segment* seg = segments[index];
+    if (!seg) return;
+    if (seg->hasStrip()) {
+        seg->clear(); // this will call strip->show() internally
+    } else {
+        // Virtual segments: nothing to do
+    }
+}
+
+void LEDLine::gradientSegment(int index, const uint8_t startRGB[3], const uint8_t endRGB[3], uint16_t drawCount) const {
+    if (index < 0 || index >= segmentCount) return;
+    const Segment* seg = segments[index];
+    if (!seg) return;
+
+    const uint16_t segLen = seg->getCount();
+    if (drawCount == 0) {
+        // clear entire segment
+        if (seg->hasStrip()) const_cast<Segment*>(seg)->clear();
+        return;
+    }
+
+    // Cap drawCount to segment length
+    if (drawCount > segLen) drawCount = segLen;
+
+    if (!seg->hasStrip()) return; // nothing to draw for virtual segments
+
+    if (drawCount == segLen) {
+        // full segment gradient
+        // build gradient array of segLen
+        uint8_t (*grad)[3] = new uint8_t[segLen][3];
+        for (uint16_t j = 0; j < segLen; ++j) {
+            const float t = (segLen <= 1) ? 1.0f : (float)j / (float)(segLen - 1);
+            grad[j][0] = (uint8_t)(startRGB[0] + (endRGB[0] - startRGB[0]) * t);
+            grad[j][1] = (uint8_t)(startRGB[1] + (endRGB[1] - startRGB[1]) * t);
+            grad[j][2] = (uint8_t)(startRGB[2] + (endRGB[2] - startRGB[2]) * t);
+        }
+        const_cast<Segment*>(seg)->runPatternNoShow(grad, segLen, 0, segLen);
+        delete[] grad;
+    } else {
+        // partial gradient for the first 'drawCount' pixels of this segment (start->end over drawCount)
+        uint8_t (*grad)[3] = new uint8_t[drawCount][3];
+        for (uint16_t j = 0; j < drawCount; ++j) {
+            const float t = (drawCount <= 1) ? 1.0f : (float)j / (float)(drawCount - 1);
+            grad[j][0] = (uint8_t)(startRGB[0] + (endRGB[0] - startRGB[0]) * t);
+            grad[j][1] = (uint8_t)(startRGB[1] + (endRGB[1] - startRGB[1]) * t);
+            grad[j][2] = (uint8_t)(startRGB[2] + (endRGB[2] - startRGB[2]) * t);
+        }
+        const_cast<Segment*>(seg)->runPatternNoShow(grad, drawCount, 0, drawCount);
+        delete[] grad;
+
+        // clear rest of segment
+        if (segLen > drawCount) {
+            uint8_t black[1][3] = {{0,0,0}};
+            const_cast<Segment*>(seg)->runPatternNoShow(black, 1, drawCount, segLen - drawCount);
+        }
+    }
+
+    // show after updating this segment
+    const_cast<Adafruit_NeoPixel&>(strip).show();
+}

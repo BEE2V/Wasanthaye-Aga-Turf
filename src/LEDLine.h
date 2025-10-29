@@ -32,4 +32,10 @@ public:
     void runGradientProgress(const uint8_t startRGB[3], const uint8_t endRGB[3], uint16_t litCount) const;
     void clearNoShow() const;
     void show() const;
+
+    // New helpers required by Turf:
+    uint8_t getSegmentCount() const;
+    int getSegmentLength(int index) const;
+    void clearSegment(int index) const;
+    void gradientSegment(int index, const uint8_t startRGB[3], const uint8_t endRGB[3], uint16_t drawCount) const;
 };

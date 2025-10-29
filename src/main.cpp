@@ -5,7 +5,7 @@ Turf turf;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Main: setup start");
   turf.begin(); // ensure Turf init runs after Serial is ready
   Serial.println("Main: Turf begin() called");

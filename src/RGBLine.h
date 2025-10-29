@@ -16,6 +16,9 @@ class RGBLine final : public LineBase {
 public:
     RGBLine(int red, int green, int blue, const int* relayPins, int count);
 
+    // Set PWM values on configured RGB pins to control body color (0..255 each)
+    void setRGBColor(uint8_t red, uint8_t green, uint8_t blue);
+    // Legacy: kept for compatibility if ever used to reassign pins (not recommended)
     void setRGB(int red, int green, int blue);
     void updateRelay(int index, bool value);
     void updateRelays(const int* indices, const bool* values, int count);

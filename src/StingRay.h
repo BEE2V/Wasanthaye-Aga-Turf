@@ -25,6 +25,7 @@ class StingRay {
     int rightWingCount;
 
 public:
+    LineBase* head;
     LineBase* tail;
 
     StingRay();
@@ -41,6 +42,7 @@ public:
     RGBLine* getBodyRGBLine(const char* name) const;
 
     void setupTail(LEDLine* tailLine);
+    void setupHead(LEDLine* headLine);
 };
 
 #endif

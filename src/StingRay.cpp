@@ -5,6 +5,7 @@ StingRay::StingRay() {
     bodyCount = 0;
     leftWingCount = 0;
     rightWingCount = 0;
+    head = nullptr;
     tail = nullptr;
 }
 
@@ -87,4 +88,9 @@ LEDLine* StingRay::getRightWingLEDLine(const char* name) const {
 // Setup tail
 void StingRay::setupTail(LEDLine* tailLine) {
     tail = tailLine;
+}
+
+// Setup head
+void StingRay::setupHead(LEDLine* headLine) {
+    head = headLine;
 }

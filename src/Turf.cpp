@@ -4,28 +4,28 @@
 #define BODY_RED_PIN 5
 #define BODY_GREEN_PIN 6
 #define BODY_BLUE_PIN 7
-constexpr int BODY_RELAY_PINS[] = {A12, A15, A13, A14, A11, A10, A8, A9, A7};
+constexpr int BODY_RELAY_PINS[] = {0, 1, A1, A2, A3, A4, A5, A6, A7};
 constexpr int BODY_RELAY_COUNT = sizeof(BODY_RELAY_PINS) / sizeof(BODY_RELAY_PINS[0]);
 
-#define LEFT_WING_TOP_PIN 24
-#define LEFT_WING_TRIANGLE_PIN 21
-#define LEFT_WING_SHORT_PIN 16
-#define LEFT_WING_LONG_PIN 17
-#define LEFT_WING_CIRCULAR_PIN 14
-#define LEFT_WING_RHOMBUS_PIN 15
+#define LEFT_WING_TOP_PIN 8
+#define LEFT_WING_TRIANGLE_PIN 9
+#define LEFT_WING_SHORT_PIN 10
+#define LEFT_WING_LONG_PIN 11
+#define LEFT_WING_CIRCULAR_PIN 12
+#define LEFT_WING_RHOMBUS_PIN 13
 
-#define RIGHT_WING_TOP_PIN 23
-#define RIGHT_WING_TRIANGLE_PIN 22
-#define RIGHT_WING_SHORT_PIN 18
-#define RIGHT_WING_LONG_PIN 19
-#define RIGHT_WING_CIRCULAR_PIN 20
-#define RIGHT_WING_RHOMBUS_PIN 25
+#define RIGHT_WING_TOP_PIN 8
+#define RIGHT_WING_TRIANGLE_PIN 9
+#define RIGHT_WING_SHORT_PIN 10
+#define RIGHT_WING_LONG_PIN 11
+#define RIGHT_WING_CIRCULAR_PIN 12
+#define RIGHT_WING_RHOMBUS_PIN 13
 
-#define HEAD_PIN 27
-#define TAIL_PIN 26
+#define HEAD_PIN 3
+#define TAIL_PIN 4
 
-constexpr uint8_t TOP_WAVE_PINS[] = {A3, A4, A5};
-constexpr uint8_t BOTTOM_WAVE_PINS[] = {A0, A1, A2};
+constexpr uint8_t TOP_WAVE_PINS[] = {0, A3, A7};
+constexpr uint8_t BOTTOM_WAVE_PINS[] = {0, A3, A7};
 
 
 // ------------------------- Turf -------------------------
@@ -319,12 +319,12 @@ void Turf::setupOcean() {
     if (auto l = stingRay.getLeftWingLEDLine("circular"))  l->runPattern(color, 1);
     if (auto l = stingRay.getLeftWingLEDLine("rhombus"))   l->runPattern(color, 1);
 
-    if (auto r = stingRay.getRightWingLEDLine("top"))       r->runPattern(color, 1);
-    if (auto r = stingRay.getRightWingLEDLine("triangle"))  r->runPattern(color, 1);
-    if (auto r = stingRay.getRightWingLEDLine("short"))     r->runPattern(color, 1);
-    if (auto r = stingRay.getRightWingLEDLine("long"))      r->runPattern(color, 1);
-    if (auto r = stingRay.getRightWingLEDLine("circular"))  r->runPattern(color, 1);
-    if (auto r = stingRay.getRightWingLEDLine("rhombus"))   r->runPattern(color, 1);
+    // if (auto r = stingRay.getRightWingLEDLine("top"))       r->runPattern(color, 1);
+    // if (auto r = stingRay.getRightWingLEDLine("triangle"))  r->runPattern(color, 1);
+    // if (auto r = stingRay.getRightWingLEDLine("short"))     r->runPattern(color, 1);
+    // if (auto r = stingRay.getRightWingLEDLine("long"))      r->runPattern(color, 1);
+    // if (auto r = stingRay.getRightWingLEDLine("circular"))  r->runPattern(color, 1);
+    // if (auto r = stingRay.getRightWingLEDLine("rhombus"))   r->runPattern(color, 1);
 
     if (auto tailLed = static_cast<LEDLine*>(stingRay.tail)) tailLed->runPattern(color, 1);
     if (auto headLed = static_cast<LEDLine*>(stingRay.head)) headLed->runPattern(color, 1);
@@ -404,13 +404,13 @@ void Turf::runOcean() {
     LEDLine* ltp = stingRay.getLeftWingLEDLine("top");
     LEDLine* linesL[6] = {lrh, lci, llo, lsh, ltr, ltp};
 
-    LEDLine* rrh = stingRay.getRightWingLEDLine("rhombus");
-    LEDLine* rci = stingRay.getRightWingLEDLine("circular");
-    LEDLine* rlo = stingRay.getRightWingLEDLine("long");
-    LEDLine* rsh = stingRay.getRightWingLEDLine("short");
-    LEDLine* rtr = stingRay.getRightWingLEDLine("triangle");
-    LEDLine* rtp = stingRay.getRightWingLEDLine("top");
-    LEDLine* linesR[6] = {rrh, rci, rlo, rsh, rtr, rtp};
+    // LEDLine* rrh = stingRay.getRightWingLEDLine("rhombus");
+    // LEDLine* rci = stingRay.getRightWingLEDLine("circular");
+    // LEDLine* rlo = stingRay.getRightWingLEDLine("long");
+    // LEDLine* rsh = stingRay.getRightWingLEDLine("short");
+    // LEDLine* rtr = stingRay.getRightWingLEDLine("triangle");
+    // LEDLine* rtp = stingRay.getRightWingLEDLine("top");
+    // LEDLine* linesR[6] = {rrh, rci, rlo, rsh, rtr, rtp};
 
     // Tail and body
     LEDLine* tailLed = static_cast<LEDLine*>(stingRay.tail);
@@ -430,9 +430,9 @@ void Turf::runOcean() {
     uint32_t leftSum = 0, rightSum = 0;
     for (int i = 0; i < 6; ++i) {
         leftTotals[i] = linesL[i] ? linesL[i]->getPhysicalLength() : 0;
-        rightTotals[i] = linesR[i] ? linesR[i]->getPhysicalLength() : 0;
+        // rightTotals[i] = linesR[i] ? linesR[i]->getPhysicalLength() : 0;
         leftSum += leftTotals[i];
-        rightSum += rightTotals[i];
+        // rightSum += rightTotals[i];
     }
 
     const uint16_t tailLen = tailLed ? tailLed->getPhysicalLength() : 0;
@@ -490,7 +490,7 @@ void Turf::runOcean() {
             }
             for (int i = 0; i < 6; ++i) {
                 if (linesL[i]) linesL[i]->clear();
-                if (linesR[i]) linesR[i]->clear();
+                // if (linesR[i]) linesR[i]->clear();
             }
             return;
         }
@@ -513,10 +513,11 @@ void Turf::runOcean() {
                 const uint16_t toDrawL = mapProgress(bodyProgressFrame, bodyWingFrames, leftTotals[i]);
                 linesL[i]->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, toDrawL);
             }
+            /*
             if (linesR[i]) {
                 const uint16_t toDrawR = mapProgress(bodyProgressFrame, bodyWingFrames, rightTotals[i]);
                 linesR[i]->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, toDrawR);
-            }
+            }*/
         }
 
     } else {
@@ -549,13 +550,13 @@ void Turf::runOcean() {
                     // draw 'remainingL' from start (which results in end->start being turned off progressively)
                     linesL[i]->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, remainingL);
                 }
-                if (linesR[i]) {
-                    uint16_t lineCount = rightTotals[i];
-                    uint16_t turnedOffR = (uint16_t)((revProgress * lineCount) / bodyWingFrames);
-                    if (turnedOffR > lineCount) turnedOffR = lineCount;
-                    uint16_t remainingR = (turnedOffR >= lineCount) ? 0 : (lineCount - turnedOffR);
-                    linesR[i]->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, remainingR);
-                }
+                // if (linesR[i]) {
+                //     uint16_t lineCount = rightTotals[i];
+                //     uint16_t turnedOffR = (uint16_t)((revProgress * lineCount) / bodyWingFrames);
+                //     if (turnedOffR > lineCount) turnedOffR = lineCount;
+                //     uint16_t remainingR = (turnedOffR >= lineCount) ? 0 : (lineCount - turnedOffR);
+                //     linesR[i]->runGradientProgress(leftWingGradients[i].start, leftWingGradients[i].end, remainingR);
+                // }
             }
 
             return;
@@ -592,7 +593,7 @@ void Turf::runOcean() {
             }
             for (int i = 0; i < 6; ++i) {
                 if (linesL[i]) linesL[i]->clear();
-                if (linesR[i]) linesR[i]->clear();
+                // if (linesR[i]) linesR[i]->clear();
             }
         }
     }
